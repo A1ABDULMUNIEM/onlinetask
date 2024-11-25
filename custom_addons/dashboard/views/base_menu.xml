@@ -1,0 +1,11 @@
+<odoo>
+    <menuitem
+            id="dashboard_root_menu"
+            name="Dashboard"
+    />
+    <menuitem
+            id="details_menu"
+            name="Details"
+            parent="dashboard_root_menu"
+    />
+</odoo>

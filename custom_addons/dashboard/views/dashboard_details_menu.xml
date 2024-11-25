@@ -1,0 +1,48 @@
+<odoo>
+<!--    The tree view-->
+    <record id="dashboard_details_menu_tree_view" model="ir.ui.view">
+        <field name="name"> Dashboard Tree View</field>
+        <field name="model">res.partner.customer.metrics</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="customer_id"/>
+                <field name="total_sales"/>
+                <field name="order_count"/>
+            </tree>
+        </field>
+
+    </record>
+<!--    there is no need for the form view when it comes to the required task but i just did it -->
+    <record id="dashboard_details_menu_form_view" model="ir.ui.view">
+        <field name="name"> Dashboard Form View</field>
+        <field name="model">res.partner.customer.metrics</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oi_title">
+                        <label for="customer_id"/>
+                        <h1>
+                            <field name="customer_id"/>
+                        </h1>
+                    </div>
+                    <group string="Stats">
+                        <field name="total_sales"/>
+                        <field name="order_count"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+
+    </record>
+    <record id="top_customers_action" model="ir.actions.act_window">
+        <field name="name">Top Customers</field>
+        <field name="res_model">res.partner.customer.metrics</field>
+
+    </record>
+    <menuitem
+            id="customer_menu"
+            name="Top Customers"
+            parent="details_menu"
+            action="top_customers_action"
+    />
+</odoo>
