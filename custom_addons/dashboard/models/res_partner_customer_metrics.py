@@ -11,6 +11,26 @@ class SaleOrder(models.Model):
 
     partner_id = fields.Many2one('res.partner')
 
+    @api.model
+    def create(self, values):
+        order = super(SaleOrder, self).create(values)
+        self._update_customer_metrics(order.partner_id)
+        return order
+
+    def write(self, values):
+        res = super(SaleOrder, self).write(values)
+        for order in self:
+            self._update_customer_metrics(order.partner_id)
+        return res
+
+    def _update_customer_metrics(self, partner):
+        customer_metrics = self.env['res.partner.customer.metrics'].search([('customer_id', '=', partner.id)], limit=1)
+        if not customer_metrics:
+            customer_metrics = self.env['res.partner.customer.metrics'].create({'customer_id': partner.id})
+
+        customer_metrics._compute_sum()
+        customer_metrics._compute_orders()
+
 class CustomerMetrics(models.Model):
     _name='res.partner.customer.metrics'
     customer_id = fields.Many2one('res.partner')
@@ -34,6 +54,7 @@ class CustomerMetrics(models.Model):
 
 
     def get_top_customers(self):
+
         top_customers = self.search([], order='total_sales desc', limit=5)
 
         customer_data = []
