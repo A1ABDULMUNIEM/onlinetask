@@ -37,6 +37,8 @@
     <record id="top_customers_action" model="ir.actions.act_window">
         <field name="name">Top Customers</field>
         <field name="res_model">res.partner.customer.metrics</field>
+        <field name="domain">[('is_top', '=', True)]</field>
+
 
     </record>
     <menuitem

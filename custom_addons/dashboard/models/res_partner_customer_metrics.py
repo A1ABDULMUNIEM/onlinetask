@@ -36,6 +36,9 @@ class CustomerMetrics(models.Model):
     customer_id = fields.Many2one('res.partner')
     total_sales = fields.Float(compute='_compute_sum',store=1)
     order_count = fields.Integer(compute='_compute_orders', store=1)
+    is_top = fields.Boolean(default=False, compute='_compute_top_customers', store=1)
+
+
     @api.depends('customer_id.sale_order_ids.amount_total')
     def _compute_sum(self):
         for rec in self:
@@ -51,18 +54,23 @@ class CustomerMetrics(models.Model):
         for rec in self:
             rec.order_count = len(rec.customer_id.sale_order_ids)
 
+    @api.depends('total_sales')
+    def _compute_top_customers(self):
+        all_metrics = self.search([], order='total_sales desc', limit=5)
+        top_ids = all_metrics.mapped('id')
+        for rec in self:
+            rec.is_top = rec.id in top_ids
 
-
-    def get_top_customers(self):
-
-        top_customers = self.search([], order='total_sales desc', limit=5)
-
-        customer_data = []
-        for customer in top_customers:
-            customer_data.append({
-                'customer_name': customer.customer_id.name,
-                'total_sales': customer.total_sales,
-                'order_count': customer.order_count
-            })
-        return customer_data
+    # def get_top_customers(self):
+    #
+    #     top_customers = self.search([], order='total_sales desc', limit=5)
+    #
+    #     customer_data = []
+    #     for customer in top_customers:
+    #         customer_data.append({
+    #             'customer_name': customer.customer_id.name,
+    #             'total_sales': customer.total_sales,
+    #             'order_count': customer.order_count
+    #         })
+    #     return customer_data
 
